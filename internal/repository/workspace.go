@@ -21,18 +21,35 @@ func NewWorkspaceRepo(db *gorm.DB) *WorkspaceRepo {
 }
 
 func (repo *WorkspaceRepo) GetByID(id uint) (*model.Workspace, error) {
-	return nil, nil
+	var workspace model.Workspace
+	if err := repo.db.First(&workspace, id).Error; err != nil {
+		return nil, err
+	}
+	return &workspace, nil
 }
 
 func (repo *WorkspaceRepo) GetAll() ([]*model.Workspace, error) {
-	return nil, nil
+
+	var workspace []*model.Workspace
+	if err := repo.db.Find(&workspace).Error; err != nil {
+		return nil, err
+	}
+	return workspace, nil
 }
+
 func (repo *WorkspaceRepo) Create(workspace *model.Workspace) error {
-	return nil
+	return repo.db.Create(workspace).Error
 }
+
 func (repo *WorkspaceRepo) Update(workspace *model.Workspace) error {
-	return nil
+
+	_, err := repo.GetByID(workspace.ID)
+	if err != nil {
+		return err
+	}
+	return repo.db.Save(workspace).Error
 }
+
 func (repo *WorkspaceRepo) Delete(id uint) error {
-	return nil
+	return repo.db.Delete(&model.Workspace{}, id).Error
 }
