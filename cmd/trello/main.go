@@ -1,23 +1,29 @@
 package main
 
 import (
-	"Trello/internal/db"
+	"Trello/internal/database"
+	"Trello/internal/http/handler"
 	"Trello/internal/http/middleware"
+	"Trello/internal/repository"
 	"github.com/labstack/echo/v4"
+	"log"
 	"net/http"
 )
 
 func main() {
 	e := echo.New()
 	e.Use(middleware.InfoLogger)
-	_, err := db.InitializeDB()
+	db, err := database.InitializeDB()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
+	workspaceGroup := e.Group("/workspace")
+	workspaceHandler := handler.NewWorkspace(repository.NewWorkspaceRepo(db))
+	workspaceHandler.Register(workspaceGroup)
 
 	e.Logger.Fatal(e.Start(":8080"))
 
