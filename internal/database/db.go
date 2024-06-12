@@ -1,6 +1,7 @@
-package db
+package database
 
 import (
+	"Trello/internal/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -11,5 +12,11 @@ func InitializeDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	err = db.AutoMigrate(&model.Workspace{})
+	if err != nil {
+		return nil, err
+	}
+
 	return db, nil
 }
