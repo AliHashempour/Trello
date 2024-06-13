@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"Trello/internal/auth/jwtutil"
 	"Trello/internal/hash"
 	"Trello/internal/model"
 	"Trello/internal/repository"
@@ -62,7 +63,15 @@ func (h *User) Login(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid password"})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"login successful": user})
+	token, err := jwtutil.GenerateToken(user.Username)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to generate token"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "Login successful",
+		"token":   token,
+	})
 }
 
 func (h *User) GetUserList(c echo.Context) error {
