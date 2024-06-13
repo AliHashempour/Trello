@@ -6,11 +6,11 @@ import (
 )
 
 type UserRepository interface {
-	GetByID(id uint) (*model.User, error)
+	GetBy(fields map[string]interface{}) (*model.User, error)
 	GetAll() ([]*model.User, error)
-	Create(workspace *model.User) error
-	Update(workspace *model.User) error
-	Delete(id uint) error
+	Create(user *model.User) error
+	Update(user *model.User) error
+	DeleteBy(fields map[string]interface{}) error
 }
 
 type UserRepo struct {
@@ -21,9 +21,11 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 	return &UserRepo{db: db}
 }
 
-func (r *UserRepo) GetByID(id uint) (*model.User, error) {
+func (r *UserRepo) GetBy(fields map[string]interface{}) (*model.User, error) {
 	var user model.User
-	if err := r.db.First(&user, id).Error; err != nil {
+
+	err := r.db.Where(fields).First(&user).Error
+	if err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -42,7 +44,7 @@ func (r *UserRepo) Create(user *model.User) error {
 }
 
 func (r *UserRepo) Update(user *model.User) error {
-	existingUser, err := r.GetByID(user.ID)
+	existingUser, err := r.GetBy(map[string]interface{}{"id": user.ID})
 	if err != nil {
 		return err
 	}
@@ -67,10 +69,11 @@ func (r *UserRepo) Update(user *model.User) error {
 	return nil
 }
 
-func (r *UserRepo) Delete(id uint) error {
-	_, err := r.GetByID(id)
+func (r *UserRepo) DeleteBy(fields map[string]interface{}) error {
+	var user model.User
+	_, err := r.GetBy(fields)
 	if err != nil {
 		return err
 	}
-	return r.db.Delete(&model.User{}, id).Error
+	return r.db.Where(fields).Delete(&user).Error
 }
