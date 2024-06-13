@@ -25,6 +25,10 @@ func main() {
 	workspaceHandler := handler.NewWorkspace(repository.NewWorkspaceRepo(db))
 	workspaceHandler.Register(workspaceGroup)
 
+	userGroup := e.Group("/user")
+	userHandler := handler.NewUser(repository.NewUserRepo(db))
+	userHandler.Register(userGroup)
+
 	e.Logger.Fatal(e.Start(":8080"))
 
 }
