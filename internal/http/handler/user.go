@@ -18,11 +18,33 @@ func NewUser(repo repository.UserRepository) *User {
 }
 
 func (h *User) Register(g *echo.Group) {
+	g.POST("/auth/signup", h.SignUp)
+	g.POST("/auth/login", h.Login)
 	g.GET("/", h.GetUserList)
 	g.GET("/:id", h.GetUser)
 	g.POST("/", h.CreateUser)
 	g.PUT("/:id", h.UpdateUser)
 	g.DELETE("/:id", h.DeleteUser)
+}
+
+func (h *User) SignUp(c echo.Context) error {
+	var newUser model.User
+	if err := c.Bind(&newUser); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input data"})
+	}
+
+	hashedPassword := hash.PasswordHash(newUser.Password)
+	newUser.Password = hashedPassword
+
+	if err := h.repo.Create(&newUser); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to create user"})
+	}
+
+	return c.JSON(http.StatusCreated, map[string]interface{}{"registered": newUser})
+}
+
+func (h *User) Login(c echo.Context) error {
+	return nil
 }
 
 func (h *User) GetUserList(c echo.Context) error {
