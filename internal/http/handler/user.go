@@ -44,7 +44,25 @@ func (h *User) SignUp(c echo.Context) error {
 }
 
 func (h *User) Login(c echo.Context) error {
-	return nil
+	var newUser model.User
+	if err := c.Bind(&newUser); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input data"})
+	}
+
+	user, err := h.repo.GetBy(map[string]interface{}{
+		"email":    newUser.Email,
+		"username": newUser.Username},
+	)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "invalid input data"})
+	}
+
+	checkPassword := hash.CheckPasswordHash(newUser.Password, user.Password)
+	if !checkPassword {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid password"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{"login successful": user})
 }
 
 func (h *User) GetUserList(c echo.Context) error {
@@ -62,7 +80,7 @@ func (h *User) GetUser(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	user, err := h.repo.GetByID(uint(id))
+	user, err := h.repo.GetBy(map[string]interface{}{"id": id})
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -114,8 +132,10 @@ func (h *User) DeleteUser(c echo.Context) error {
 	if err != nil {
 		return echo.ErrBadRequest
 	}
-	if err := h.repo.Delete(uint(id)); err != nil {
+
+	if err := h.repo.DeleteBy(map[string]interface{}{"id": id}); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
+
 	return c.JSON(http.StatusOK, map[string]interface{}{"message": "delete user " + c.Param("id")})
 }
