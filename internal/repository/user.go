@@ -37,16 +37,34 @@ func (r *UserRepo) GetAll() ([]*model.User, error) {
 	return users, nil
 }
 
-func (r *UserRepo) Create(workspace *model.User) error {
-	return r.db.Create(workspace).Error
+func (r *UserRepo) Create(user *model.User) error {
+	return r.db.Create(user).Error
 }
 
-func (r *UserRepo) Update(workspace *model.User) error {
-	_, err := r.GetByID(workspace.ID)
+func (r *UserRepo) Update(user *model.User) error {
+	existingUser, err := r.GetByID(user.ID)
 	if err != nil {
 		return err
 	}
-	return r.db.Save(workspace).Error
+
+	if user.Email != "" {
+		existingUser.Email = user.Email
+	}
+
+	if user.Username != "" {
+		existingUser.Username = user.Username
+	}
+
+	if user.Password != "" {
+		existingUser.Password = user.Password
+	}
+
+	err = r.db.Model(&model.User{}).Where("id = ?", user.ID).Updates(existingUser).Error
+	if err != nil {
+		return err
+	}
+	*user = *existingUser
+	return nil
 }
 
 func (r *UserRepo) Delete(id uint) error {
