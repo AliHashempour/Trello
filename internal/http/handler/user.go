@@ -63,7 +63,7 @@ func (h *User) Login(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid password"})
 	}
 
-	token, err := jwtutil.GenerateToken(user.Username)
+	token, err := jwtutil.GenerateToken(user)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to generate token"})
 	}

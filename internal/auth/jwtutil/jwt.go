@@ -1,6 +1,7 @@
 package jwtutil
 
 import (
+	"Trello/internal/model"
 	"github.com/golang-jwt/jwt"
 	"time"
 )
@@ -8,14 +9,14 @@ import (
 var JwtKey = []byte("trello-secret")
 
 type Claims struct {
-	Username string `json:"username"`
+	UserID uint `json:"user_id"`
 	jwt.StandardClaims
 }
 
-func GenerateToken(username string) (string, error) {
+func GenerateToken(user *model.User) (string, error) {
 	expirationTime := time.Now().Add(15 * time.Minute)
 	claims := &Claims{
-		Username: username,
+		UserID: user.ID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
