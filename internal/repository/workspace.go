@@ -51,5 +51,9 @@ func (repo *WorkspaceRepo) Update(workspace *model.Workspace) error {
 }
 
 func (repo *WorkspaceRepo) Delete(id uint) error {
+	_, err := repo.GetByID(id)
+	if err != nil {
+		return err
+	}
 	return repo.db.Delete(&model.Workspace{}, id).Error
 }
