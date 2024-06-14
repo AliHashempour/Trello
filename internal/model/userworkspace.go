@@ -6,14 +6,14 @@ import (
 
 const (
 	RoleAdmin        = "Admin"
-	RoleStandardUser = "Standard User"
+	RoleStandardUser = "User"
 )
 
 type UserWorkspaceRole struct {
 	ID          uint   `gorm:"primaryKey"`
-	UserID      uint   `gorm:"not null"`
+	UserID      uint   `json:"user_id"    gorm:"not null"`
 	WorkspaceID uint   `gorm:"not null"`
-	Role        string `json:"role" gorm:"type:varchar(32);not null"`
+	Role        string `json:"role"       gorm:"type:varchar(32);not null"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
