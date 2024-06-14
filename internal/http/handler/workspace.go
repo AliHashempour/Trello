@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"Trello/internal/http/middleware"
 	"Trello/internal/model"
 	"Trello/internal/repository"
 	"github.com/labstack/echo/v4"
@@ -18,7 +17,7 @@ func NewWorkspace(repo repository.Workspace) *Workspace {
 }
 
 func (h *Workspace) Register(g *echo.Group) {
-	g.Use(middleware.IsAuthenticatedMiddleware)
+	//g.Use(middleware.IsAuthenticatedMiddleware)
 	g.GET("/", h.GetWorkspaceList)
 	g.GET("/:id", h.GetWorkspace)
 	g.POST("/", h.CreateWorkspace)
