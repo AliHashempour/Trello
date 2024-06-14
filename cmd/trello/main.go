@@ -29,6 +29,10 @@ func main() {
 	userHandler := handler.NewUser(repository.NewUserRepo(db))
 	userHandler.Register(userGroup)
 
+	taskGroup := e.Group("/workspace/:workspaceId/tasks")
+	taskHandler := handler.NewTask(repository.NewTaskRepo(db))
+	taskHandler.Register(taskGroup)
+
 	userWorkspaceRoleGroup := e.Group("/workspace/:workspaceId/users")
 	userWorkspaceRoleHandler := handler.NewUserWorkspaceRoleHandler(repository.NewUserWorkspaceRepository(db))
 	userWorkspaceRoleHandler.Register(userWorkspaceRoleGroup)
