@@ -13,7 +13,7 @@ func InitializeDB() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	err = db.AutoMigrate(&model.Workspace{}, &model.User{}, &model.UserWorkspaceRole{})
+	err = db.AutoMigrate(&model.Workspace{}, &model.User{}, &model.UserWorkspaceRole{}, &model.Task{})
 	if err != nil {
 		return nil, err
 	}
