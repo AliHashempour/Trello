@@ -33,6 +33,10 @@ func main() {
 	taskHandler := handler.NewTask(repository.NewTaskRepo(db))
 	taskHandler.Register(taskGroup)
 
+	subTaskGroup := e.Group("/task/:taskId/subtasks")
+	subTaskHandler := handler.NewSubTaskHandler(repository.NewSubTaskRepo(db))
+	subTaskHandler.Register(subTaskGroup)
+
 	userWorkspaceRoleGroup := e.Group("/workspace/:workspaceId/users")
 	userWorkspaceRoleHandler := handler.NewUserWorkspaceRoleHandler(repository.NewUserWorkspaceRepository(db))
 	userWorkspaceRoleHandler.Register(userWorkspaceRoleGroup)
