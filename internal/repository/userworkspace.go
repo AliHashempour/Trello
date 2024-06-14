@@ -26,6 +26,24 @@ func (r *userWorkspaceRepositoryImpl) Create(userWorkspaceRole *model.UserWorksp
 		return errors.New("invalid role")
 	}
 
+	var user model.User
+	err := r.db.First(&user, userWorkspaceRole.UserID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("user not found")
+		}
+		return err
+	}
+
+	var workspace model.Workspace
+	err = r.db.First(&workspace, userWorkspaceRole.WorkspaceID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("workspace not found")
+		}
+		return err
+	}
+
 	return r.db.Create(userWorkspaceRole).Error
 }
 
