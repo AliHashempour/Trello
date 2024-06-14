@@ -71,12 +71,7 @@ func (r *UserRepo) Update(user *model.User) error {
 
 func (r *UserRepo) DeleteBy(fields map[string]interface{}) error {
 	var user model.User
-	userRecord, err := r.GetBy(fields)
-	if err != nil {
-		return err
-	}
-
-	err = r.db.Where("user_id = ?", userRecord.ID).Delete(&model.UserWorkspaceRole{}).Error
+	_, err := r.GetBy(fields)
 	if err != nil {
 		return err
 	}
