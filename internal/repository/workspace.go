@@ -55,5 +55,10 @@ func (repo *WorkspaceRepo) Delete(id uint) error {
 	if err != nil {
 		return err
 	}
+
+	err = repo.db.Where("workspace_id = ?", id).Delete(&model.UserWorkspaceRole{}).Error
+	if err != nil {
+		return err
+	}
 	return repo.db.Delete(&model.Workspace{}, id).Error
 }
