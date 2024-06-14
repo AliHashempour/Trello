@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"Trello/internal/http/middleware"
 	"Trello/internal/model"
 	"Trello/internal/repository"
 	"github.com/labstack/echo/v4"
@@ -9,15 +10,16 @@ import (
 )
 
 type Workspace struct {
-	repo repository.Workspace
+	repo              repository.Workspace
+	userWorkspaceRepo repository.UserWorkspace
 }
 
-func NewWorkspace(repo repository.Workspace) *Workspace {
-	return &Workspace{repo: repo}
+func NewWorkspace(repo repository.Workspace, userWorkspaceRepo repository.UserWorkspace) *Workspace {
+	return &Workspace{repo: repo, userWorkspaceRepo: userWorkspaceRepo}
 }
 
 func (h *Workspace) Register(g *echo.Group) {
-	//g.Use(middleware.IsAuthenticatedMiddleware)
+	g.Use(middleware.IsAuthenticatedMiddleware)
 	g.GET("/", h.GetWorkspaceList)
 	g.GET("/:id", h.GetWorkspace)
 	g.POST("/", h.CreateWorkspace)
@@ -75,6 +77,20 @@ func (h *Workspace) UpdateWorkspace(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{"error": "name is required"})
 	}
 	workspace.ID = uint(id)
+
+	userID, ok := c.Get("user_id").(uint)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]interface{}{"error": "Unauthorized"})
+	}
+
+	hasAccess, err := h.userWorkspaceRepo.Exists(userID, workspace.ID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
+	}
+	if !hasAccess {
+		return c.JSON(http.StatusForbidden, map[string]interface{}{"error": "You do not have access to this workspace"})
+	}
+
 	if err := h.repo.Update(&workspace); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{"error": err.Error()})
 	}

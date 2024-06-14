@@ -22,7 +22,7 @@ func main() {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 	workspaceGroup := e.Group("/workspace")
-	workspaceHandler := handler.NewWorkspace(repository.NewWorkspaceRepo(db))
+	workspaceHandler := handler.NewWorkspace(repository.NewWorkspaceRepo(db), repository.NewUserWorkspaceRepository(db))
 	workspaceHandler.Register(workspaceGroup)
 
 	userGroup := e.Group("/user")

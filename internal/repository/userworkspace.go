@@ -11,6 +11,7 @@ type UserWorkspace interface {
 	GetUsersByWorkspaceID(workspaceID uint) ([]*model.User, error)
 	UpdateRole(userWorkspaceRole *model.UserWorkspaceRole) error
 	Delete(userID, workspaceID uint) error
+	Exists(userID, workspaceID uint) (bool, error)
 }
 
 type userWorkspaceRepositoryImpl struct {
@@ -92,6 +93,15 @@ func (r *userWorkspaceRepositoryImpl) UpdateRole(userWorkspaceRole *model.UserWo
 func (r *userWorkspaceRepositoryImpl) Delete(userID, workspaceID uint) error {
 	return r.db.Where("user_id = ? AND workspace_id = ?", userID, workspaceID).
 		Delete(&model.UserWorkspaceRole{}).Error
+}
+
+func (r *userWorkspaceRepositoryImpl) Exists(userID, workspaceID uint) (bool, error) {
+	var count int64
+	err := r.db.Model(&model.UserWorkspaceRole{}).Where("user_id = ? AND workspace_id = ?", userID, workspaceID).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
 
 func isValidRole(role string) bool {
