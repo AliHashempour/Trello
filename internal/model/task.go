@@ -14,7 +14,6 @@ type Task struct {
 	DueDate       time.Time `json:"due_date"`
 	Priority      int       `json:"priority"`
 	WorkspaceID   uint      `json:"workspace_id" gorm:"not null;"`
-	Workspace     Workspace `json:"workspace" gorm:"foreignKey:WorkspaceID"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 	ImageURL      string    `json:"image_url" gorm:"type:text"`
