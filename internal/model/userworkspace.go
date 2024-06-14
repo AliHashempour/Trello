@@ -1,8 +1,6 @@
 package model
 
-import (
-	"time"
-)
+import "gorm.io/gorm"
 
 const (
 	RoleAdmin        = "Admin"
@@ -10,12 +8,10 @@ const (
 )
 
 type UserWorkspaceRole struct {
-	ID          uint   `gorm:"primaryKey"`
-	UserID      uint   `json:"user_id"    gorm:"not null"`
-	WorkspaceID uint   `gorm:"not null"`
-	Role        string `json:"role"       gorm:"type:varchar(32);not null"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	gorm.Model
+	UserID      uint   `json:"user_id" gorm:"not null;"`
+	WorkspaceID uint   `json:"workspace_id" gorm:"not null;"`
+	Role        string `json:"role" gorm:"type:varchar(32);not null"`
 }
 
 func (UserWorkspaceRole) TableName() string {
