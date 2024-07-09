@@ -32,3 +32,6 @@ Build and run the application using Docker Compose:
 ```shell
 docker-compose -f deployment/docker-compose.yml up -d --build
 ```
+
+Once the application is up and running, you can access it at http://localhost:8080 .
+
