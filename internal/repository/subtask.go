@@ -3,6 +3,7 @@ package repository
 import (
 	"Trello/internal/model"
 	"gorm.io/gorm"
+	"reflect"
 )
 
 type SubTaskRepository interface {
@@ -38,9 +39,29 @@ func (r *subTaskRepository) Create(subTask *model.SubTask) error {
 }
 
 func (r *subTaskRepository) Update(subTask *model.SubTask) error {
-	return r.db.Save(subTask).Error
+	var fieldsToUpdate []string
+
+	v := reflect.ValueOf(subTask).Elem()
+	typeOfSubTask := v.Type()
+
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		fieldName := typeOfSubTask.Field(i).Name
+
+		if fieldName == "ID" {
+			continue
+		}
+		if !isZero(field) {
+			fieldsToUpdate = append(fieldsToUpdate, fieldName)
+		}
+	}
+	return r.db.Model(&model.SubTask{}).Where("id = ?", subTask.ID).Select(fieldsToUpdate).Updates(subTask).Error
 }
 
 func (r *subTaskRepository) DeleteBy(fields map[string]interface{}) error {
 	return r.db.Where(fields).Delete(&model.SubTask{}).Error
+}
+
+func isZero(v reflect.Value) bool {
+	return v.Interface() == reflect.Zero(v.Type()).Interface()
 }
