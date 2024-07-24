@@ -78,6 +78,14 @@ Structure Details
     - `created_at`: Date and time when the association was created
     - `updated_at`: Date and time when the association was last updated
 
+### Authentication & Authorization 
+
+Each user can perform CRUD operations only on their respective workspaces after authentication.
+Token-based(JWT) authentication is implemented to authenticate users.
+
+Users receive a token upon successful login, which they must use in API requests to access their workspaces.
+CRUD operations on baskets are restricted to the authenticated user.
+
 ## Getting Started
 
 ### Prerequisites
