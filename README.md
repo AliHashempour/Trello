@@ -78,7 +78,9 @@ Structure Details
     - `created_at`: Date and time when the association was created
     - `updated_at`: Date and time when the association was last updated
 
-### Authentication & Authorization 
+<br>
+
+### Authentication & Authorization
 
 Each user can perform CRUD operations only on their respective workspaces after authentication.
 Token-based(JWT) authentication is implemented to authenticate users.
