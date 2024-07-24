@@ -77,7 +77,9 @@ Structure Details
     - `role`: Role of the user in the workspace (Admin, Standard User)
     - `created_at`: Date and time when the association was created
     - `updated_at`: Date and time when the association was last updated
+   
 
+   
 ### Authentication & Authorization 
 
 Each user can perform CRUD operations only on their respective workspaces after authentication.
